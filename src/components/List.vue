@@ -10,9 +10,10 @@
       <ul class="filters">
         <li class="filter" v-for="(filter) in filters">
           <label>카테고리{{filter}}</label>
-          <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setFilter(filter)">
+          <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setTempVisibles(filter)">
         </li>
       </ul>
+      <button @click="saveFilter">저장</button>
     </div>
     <div class="header">
       <button type="button" class="btn btn-primary" @click="showModal">필터</button>
@@ -29,7 +30,7 @@
       </ul>
     </div>
     <ul>
-      <li class="content" v-for="(content) in contents[0]" v-if="visibles.includes(parseInt(content.category_no))">
+      <li class="content" v-for="(content) in contents" v-if="visibles.includes(parseInt(content.category_no))">
         <div class="card">
           <div class="card-header">
             <h6 class="card-subtitle mb-2 text-muted">카테고리{{ content.category_no }}</h6>
@@ -48,46 +49,88 @@
 </template>
 
 <script>
+  const CONTENTS_LIMIT = 300;
+  let ticking = false;
+
   export default {
     name: 'list',
     data() {
       return {
         contents: [],
         filters: [1, 2, 3],
+        tempVisibles: [],
         visibles: [1, 2, 3],
-        ord: 'asc'
+        ord: 'asc',
+        page: 1
       }
     },
     methods: {
       getContents(page, ord) {
+        ticking = false;
         this.$http.get(`http://comento.cafe24.com/request.php?page=${page}%B8&ord=${ord}`)
           .then((res) => {
-            this.contents.push(res.data.list);
+            for(const index in res.data.list) {
+              let contentBody = res.data.list[index].contents;
+              if(contentBody.length > CONTENTS_LIMIT) {
+                res.data.list[index].contents = contentBody.substring(0, CONTENTS_LIMIT) + '······.';
+              }
+              res.data.list[index].subject = 'article';
+            }
+            this.contents = this.contents.concat(res.data.list);
+            this.page++;
+            ticking = true;
           })
+      },
+      resetAdds() {
+        const contentList = document.querySelectorAll('.content');
+        for(const index in contentList) {
+          if(index % 4 === 3) {
+            contentList[index].insertAdjacentHTML('afterend', '<hr>');
+          }
+        }
       },
       changeOrder(ord) {
         this.ord = ord;
+        this.page = 1;
+        this.contents = [];
+        this.getContents(this.page, this.ord);
       },
       showModal() {
+        this.tempVisibles = [];
+        Object.assign(this.tempVisibles, this.visibles);
         document.querySelector('.dim').classList.add('is-visible');
         document.querySelector('.modal').classList.add('is-visible');
-        console.log('asf');
       },
       closeModal() {
         document.querySelector('.dim').classList.remove('is-visible');
         document.querySelector('.modal').classList.remove('is-visible');
       },
-      setFilter(no) {
-        // this.visibles = no;
-        if(this.visibles.includes(no)) {
-          this.visibles.splice(this.visibles.indexOf(no), 1);
+      setTempVisibles(no) {
+        if(this.tempVisibles.includes(no)) {
+          this.tempVisibles.splice(this.tempVisibles.indexOf(no), 1);
         } else {
-          this.visibles.push(no);
+          this.tempVisibles.push(no);
+        }
+      },
+      saveFilter() {
+        const save = confirm('해당 필터를 적용하시겠습니까?');
+        if(save) {
+          this.visibles = [];
+          Object.assign(this.visibles, this.tempVisibles);
+          this.closeModal();
         }
       }
     },
     mounted() {
-      this.getContents(1, 'asc');
+      this.getContents(this.page, this.ord);
+      window.onscroll = () => {
+        if (ticking && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          this.getContents(this.page, this.ord);
+        }
+      };
+    },
+    updated() {
+      this.resetAdds();
     }
   }
 </script>
