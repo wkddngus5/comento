@@ -1,7 +1,21 @@
 <template>
   <div class="main">
+    <div class="dim"></div>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>필터</h3>
+        <button @click="closeModal">X</button>
+      </div>
+
+      <ul class="filters">
+        <li class="filter" v-for="(filter) in filters">
+          <label>카테고리{{filter}}</label>
+          <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setFilter(filter)">
+        </li>
+      </ul>
+    </div>
     <div class="header">
-      <button type="button" class="btn btn-primary">필터</button>
+      <button type="button" class="btn btn-primary" @click="showModal">필터</button>
       <div class="filler"></div>
       <ul class="nav">
         <li class="nav-item">
@@ -15,12 +29,12 @@
       </ul>
     </div>
     <ul>
-      <li class="content" v-for="(content, index) in contents[0]">
+      <li class="content" v-for="(content) in contents[0]" v-if="visibles.includes(parseInt(content.category_no))">
         <div class="card">
           <div class="card-header">
-            <h6 class="card-subtitle mb-2 text-muted">{{ content.category_no }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">카테고리{{ content.category_no }}</h6>
             <div class="filler"></div>
-            <h6 class="card-subtitle mb-2 text-muted">카테고리{{ content.no }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">NO. {{ content.no }}</h6>
           </div>
           <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted">{{ content.email }} | {{ content.updated_at }}</h6>
@@ -30,16 +44,17 @@
         </div>
       </li>
     </ul>
-
   </div>
 </template>
 
 <script>
   export default {
-    name: 'main',
+    name: 'list',
     data() {
       return {
         contents: [],
+        filters: [1, 2, 3],
+        visibles: [1, 2, 3],
         ord: 'asc'
       }
     },
@@ -47,12 +62,28 @@
       getContents(page, ord) {
         this.$http.get(`http://comento.cafe24.com/request.php?page=${page}%B8&ord=${ord}`)
           .then((res) => {
-            console.log(res.data.list);
             this.contents.push(res.data.list);
           })
       },
       changeOrder(ord) {
         this.ord = ord;
+      },
+      showModal() {
+        document.querySelector('.dim').classList.add('is-visible');
+        document.querySelector('.modal').classList.add('is-visible');
+        console.log('asf');
+      },
+      closeModal() {
+        document.querySelector('.dim').classList.remove('is-visible');
+        document.querySelector('.modal').classList.remove('is-visible');
+      },
+      setFilter(no) {
+        // this.visibles = no;
+        if(this.visibles.includes(no)) {
+          this.visibles.splice(this.visibles.indexOf(no), 1);
+        } else {
+          this.visibles.push(no);
+        }
       }
     },
     mounted() {
@@ -79,6 +110,40 @@
 
   a {
     color: #42b983;
+  }
+
+  .dim {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    position: fixed;
+    z-index: 5;
+    opacity: 0.5;
+  }
+
+  .dim.is-visible {
+    display: block;
+  }
+
+  .modal {
+    margin: 10%;
+    display: none;
+    width: auto;
+    height: 200px;
+    position: fixed;
+    z-index: 10;
+    background-color: #FFFFFF;
+    flex-direction: column;
+  }
+
+  .modal.is-visible {
+    display: flex;
+  }
+
+  .modal h3 {
+    display: inline-block;
+    width: 200px;
   }
 
   .header {
