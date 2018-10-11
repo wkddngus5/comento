@@ -4,7 +4,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3>필터</h3>
-        <button @click="closeModal">X</button>
+        <button class="close-btn" @click="closeModal">X</button>
       </div>
 
       <ul class="filters">
@@ -13,10 +13,10 @@
           <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setTempVisibles(filter.no)">
         </li>
       </ul>
-      <button @click="saveFilter">저장</button>
+      <button class="save-btn" @click="saveFilter">저장</button>
     </div>
     <div class="header">
-      <button type="button" class="btn btn-primary" @click="showModal">필터</button>
+      <button type="button" class="btn btn-primary filter" @click="showModal">필터</button>
       <div class="filler"></div>
       <ul class="nav">
         <li class="nav-item">
@@ -31,18 +31,20 @@
     </div>
     <ul>
       <li class="content" v-for="(content) in contents" v-if="visibles.includes(parseInt([content.category_no]))">
-        <div class="card">
-          <div class="card-header">
-            <h6 class="card-subtitle mb-2 text-muted">{{ content.category }}</h6>
-            <div class="filler"></div>
-            <h6 class="card-subtitle mb-2 text-muted">NO. {{ content.no }}</h6>
+        <a v-bind:href="'/#/contents/' + content.no">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="card-subtitle mb-2 text-muted">{{ content.category }}</h6>
+              <div class="filler"></div>
+              <h6 class="card-subtitle mb-2 text-muted">NO. {{ content.no }}</h6>
+            </div>
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2 text-muted">{{ content.email }} | {{ content.updated_at }}</h6>
+              <h5 class="card-title">{{ content.title }}</h5>
+              <p class="card-text">{{ content.contents }}</p>
+            </div>
           </div>
-          <div class="card-body">
-            <h6 class="card-subtitle mb-2 text-muted">{{ content.email }} | {{ content.updated_at }}</h6>
-            <h5 class="card-title">{{ content.title }}</h5>
-            <p class="card-text">{{ content.contents }}</p>
-          </div>
-        </div>
+        </a>
       </li>
     </ul>
   </div>
@@ -222,11 +224,14 @@
     margin: 0 10px;
   }
 
-  a {
-    color: #42b983;
+  a:hover {
+    text-decoration: none;
+    opacity: 0.8;
   }
 
   .dim {
+    top: 0;
+    left: 0;
     display: none;
     width: 100vw;
     height: 100vh;
@@ -249,15 +254,44 @@
     z-index: 10;
     background-color: #FFFFFF;
     flex-direction: column;
+    text-align: center;
   }
 
   .modal.is-visible {
     display: flex;
   }
 
+  .modal .close-btn {
+    background: none;
+    border: none;
+  }
+
+  .modal .close-btn:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    background-color: #efefef;
+  }
+
   .modal h3 {
     display: inline-block;
     width: 200px;
+    margin: 0 auto;
+  }
+
+  .modal .save-btn {
+    background: none;
+    width: 300px;
+    margin: 0 auto;
+  }
+
+  .modal .save-btn:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    background-color: #efefef;
+  }
+
+  .btn.filter {
+    margin: 0 0 0 40px;
   }
 
   .header {
