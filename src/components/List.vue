@@ -50,13 +50,24 @@
 
 <script>
   const CONTENTS_LIMIT = 300;
+  const AD_BY_CONTENTS = 4;
+  const AD_ORDER = 3;
+
   let ticking = false;
+
+  function summarizeContents(contents) {
+    if (contents.length > CONTENTS_LIMIT) {
+      return contents.substring(0, CONTENTS_LIMIT) + '······.';
+    }
+    return contents;
+  }
 
   export default {
     name: 'list',
     data() {
       return {
         contents: [],
+        ads: [],
         filters: [1, 2, 3],
         tempVisibles: [],
         visibles: [1, 2, 3],
@@ -69,11 +80,9 @@
         ticking = false;
         this.$http.get(`http://comento.cafe24.com/request.php?page=${page}%B8&ord=${ord}`)
           .then((res) => {
-            for(const index in res.data.list) {
+            for (const index in res.data.list) {
               let contentBody = res.data.list[index].contents;
-              if(contentBody.length > CONTENTS_LIMIT) {
-                res.data.list[index].contents = contentBody.substring(0, CONTENTS_LIMIT) + '······.';
-              }
+              res.data.list[index].contents = summarizeContents(contentBody);
               res.data.list[index].subject = 'article';
             }
             this.contents = this.contents.concat(res.data.list);
@@ -81,11 +90,38 @@
             ticking = true;
           })
       },
+      getAds(page) {
+        return new Promise((resolve, reject) => {
+          this.$http.get(`http://comento.cafe24.com/ads.php?page=${page}`)
+            .then(res => {
+              for (const index in res.data.list) {
+                let adBody = res.data.list[index].contents;
+                res.data.list[index].contents = summarizeContents(adBody);
+                res.data.list[index].subject = 'ad';
+              }
+              this.ads = this.ads.concat(res.data.list);
+              resolve();
+            })
+        });
+      },
       resetAdds() {
         const contentList = document.querySelectorAll('.content');
-        for(const index in contentList) {
-          if(index % 4 === 3) {
-            contentList[index].insertAdjacentHTML('afterend', '<hr>');
+        const adList = document.querySelectorAll('.ad');
+
+        for(let index = 0 ; index < adList.length ; index++) {
+          adList[index].remove();
+        }
+
+        for (let index = 0 ; index <  contentList.length ; index++) {
+          if (index % AD_BY_CONTENTS === AD_ORDER) {
+            const toGetAdOrder = parseInt(index / AD_BY_CONTENTS);
+            if(!this.ads[toGetAdOrder]) {
+              this.getAds(toGetAdOrder / 10 + 1).then(() => {
+                contentList[index].insertAdjacentHTML('afterend', this.makeAdByTemplate(this.ads[toGetAdOrder]));
+              })
+            } else {
+              contentList[index].insertAdjacentHTML('afterend', this.makeAdByTemplate(this.ads[toGetAdOrder]));
+            }
           }
         }
       },
@@ -106,7 +142,7 @@
         document.querySelector('.modal').classList.remove('is-visible');
       },
       setTempVisibles(no) {
-        if(this.tempVisibles.includes(no)) {
+        if (this.tempVisibles.includes(no)) {
           this.tempVisibles.splice(this.tempVisibles.indexOf(no), 1);
         } else {
           this.tempVisibles.push(no);
@@ -114,11 +150,30 @@
       },
       saveFilter() {
         const save = confirm('해당 필터를 적용하시겠습니까?');
-        if(save) {
+        if (save) {
           this.visibles = [];
           Object.assign(this.visibles, this.tempVisibles);
           this.closeModal();
         }
+      },
+      makeAdByTemplate(ad) {
+        const adElm = `
+        <li class="ad">
+            <div class="card">
+              <div class="card-subject">
+                <h6 class="card-subtitle mb-2 text-muted">Sponsored</h6>
+              </div>
+              <div class="card-body">
+                <div class="image"></div>
+                <div class="text">
+                  <h5 class="card-title">${ad.title}</h5>
+                  <p class="card-text">${ad.contents}</p>
+                </div>
+              </div>
+            </div>
+          </li>
+        `
+        return adElm;
       }
     },
     mounted() {
@@ -213,5 +268,4 @@
   .card-header {
     display: flex;
   }
-
 </style>
