@@ -43,4 +43,17 @@ export default {
     flex: 2;
   }
 
+  @media (max-width: 480px) {
+    .ad .card-body {
+      flex-direction: column;
+    }
+
+    .ad .image {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 15px;
+    }
+  }
+
+
 </style>

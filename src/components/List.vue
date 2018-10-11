@@ -9,8 +9,8 @@
 
       <ul class="filters">
         <li class="filter" v-for="(filter) in filters">
-          <label>카테고리{{filter}}</label>
-          <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setTempVisibles(filter)">
+          <label>{{filter.name}}</label>
+          <input type="checkbox" v-bind:data-item="filter" checked="checked" @click="setTempVisibles(filter.no)">
         </li>
       </ul>
       <button @click="saveFilter">저장</button>
@@ -30,10 +30,10 @@
       </ul>
     </div>
     <ul>
-      <li class="content" v-for="(content) in contents" v-if="visibles.includes(parseInt(content.category_no))">
+      <li class="content" v-for="(content) in contents" v-if="visibles.includes(parseInt([content.category_no]))">
         <div class="card">
           <div class="card-header">
-            <h6 class="card-subtitle mb-2 text-muted">카테고리{{ content.category_no }}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{ content.category }}</h6>
             <div class="filler"></div>
             <h6 class="card-subtitle mb-2 text-muted">NO. {{ content.no }}</h6>
           </div>
@@ -68,7 +68,7 @@
       return {
         contents: [],
         ads: [],
-        filters: [1, 2, 3],
+        filters: [],
         tempVisibles: [],
         visibles: [1, 2, 3],
         ord: 'asc',
@@ -81,23 +81,34 @@
         this.$http.get(`http://comento.cafe24.com/request.php?page=${page}%B8&ord=${ord}`)
           .then((res) => {
             for (const index in res.data.list) {
-              let contentBody = res.data.list[index].contents;
-              res.data.list[index].contents = summarizeContents(contentBody);
-              res.data.list[index].subject = 'article';
+              const item = res.data.list[index];
+              item.contents = summarizeContents(item.contents);
+              item.subject = 'article';
+              item.category = this.filters[parseInt(item.category_no) - 1].name;
             }
             this.contents = this.contents.concat(res.data.list);
             this.page++;
             ticking = true;
           })
       },
+      getCategories() {
+        return new Promise((resove, reject) => {
+          this.$http.get(`http://comento.cafe24.com/category.php`)
+            .then(res => {
+              this.filters = res.data.list;
+              resove();
+            })
+        });
+      },
       getAds(page) {
         return new Promise((resolve, reject) => {
           this.$http.get(`http://comento.cafe24.com/ads.php?page=${page}`)
             .then(res => {
               for (const index in res.data.list) {
-                let adBody = res.data.list[index].contents;
-                res.data.list[index].contents = summarizeContents(adBody);
-                res.data.list[index].subject = 'ad';
+                console.log(res.data.list[index]);
+                const item = res.data.list[index];
+                item.contents = summarizeContents(item.contents);
+                item.subject = 'ad';
               }
               this.ads = this.ads.concat(res.data.list);
               resolve();
@@ -142,17 +153,20 @@
         document.querySelector('.modal').classList.remove('is-visible');
       },
       setTempVisibles(no) {
-        if (this.tempVisibles.includes(no)) {
-          this.tempVisibles.splice(this.tempVisibles.indexOf(no), 1);
+        const intNumber = parseInt(no);
+        if (this.tempVisibles.includes(intNumber)) {
+          this.tempVisibles.splice(this.tempVisibles.indexOf(intNumber), 1);
         } else {
-          this.tempVisibles.push(no);
+          this.tempVisibles.push(intNumber);
         }
       },
       saveFilter() {
         const save = confirm('해당 필터를 적용하시겠습니까?');
         if (save) {
           this.visibles = [];
-          Object.assign(this.visibles, this.tempVisibles);
+          for(let i = 0 ; i < this.tempVisibles.length ; i++) {
+            this.visibles.push(this.tempVisibles[i]);
+          }
           this.closeModal();
         }
       },
@@ -177,7 +191,9 @@
       }
     },
     mounted() {
-      this.getContents(this.page, this.ord);
+      this.getCategories().then(() => {
+        this.getContents(this.page, this.ord);
+      });
       window.onscroll = () => {
         if (ticking && (window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
           this.getContents(this.page, this.ord);
@@ -217,7 +233,7 @@
     background-color: #000000;
     position: fixed;
     z-index: 5;
-    opacity: 0.5;
+    opacity: 0.7;
   }
 
   .dim.is-visible {
