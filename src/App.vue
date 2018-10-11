@@ -37,6 +37,7 @@ export default {
     background-color: black;
     flex: 1;
     margin-right: 30px;
+    background-size: cover;
   }
 
   .ad .text {

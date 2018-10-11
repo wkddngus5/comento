@@ -173,6 +173,8 @@
         }
       },
       makeAdByTemplate(ad) {
+        const imageUrl = `http://comento.cafe24.com/public/images/${ad.img}`;
+
         const adElm = `
         <li class="ad">
             <div class="card">
@@ -180,7 +182,7 @@
                 <h6 class="card-subtitle mb-2 text-muted">Sponsored</h6>
               </div>
               <div class="card-body">
-                <div class="image"></div>
+                <div class="image" style="background-image: url(${imageUrl})"></div>
                 <div class="text">
                   <h5 class="card-title">${ad.title}</h5>
                   <p class="card-text">${ad.contents}</p>
