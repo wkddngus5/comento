@@ -30,7 +30,7 @@
       </ul>
     </div>
     <ul>
-      <li class="content" v-for="(content) in contents" v-if="visibles.includes(parseInt([content.category_no]))">
+      <li class="content" v-for="(content) in activeContents">
         <a v-bind:href="'/#/contents/' + content.no">
           <div class="card">
             <div class="card-header">
@@ -52,8 +52,8 @@
 
 <script>
   const CONTENTS_LIMIT = 300;
-  const AD_BY_CONTENTS = 4;
-  const AD_ORDER = 3;
+  const AD_BY_CONTENTS = 3;
+  const AD_ORDER = 2;
 
   let ticking = false;
 
@@ -69,6 +69,7 @@
     data() {
       return {
         contents: [],
+        activeContents: [],
         ads: [],
         filters: [],
         tempVisibles: [],
@@ -89,6 +90,9 @@
               item.category = this.filters[parseInt(item.category_no) - 1].name;
             }
             this.contents = this.contents.concat(res.data.list);
+            this.activeContents = this.contents.filter(item => {
+              return this.visibles.includes(parseInt(item.category_no));
+            });
             this.page++;
             ticking = true;
           })
@@ -107,7 +111,6 @@
           this.$http.get(`http://comento.cafe24.com/ads.php?page=${page}`)
             .then(res => {
               for (const index in res.data.list) {
-                console.log(res.data.list[index]);
                 const item = res.data.list[index];
                 item.contents = summarizeContents(item.contents);
                 item.subject = 'ad';
@@ -169,6 +172,9 @@
           for(let i = 0 ; i < this.tempVisibles.length ; i++) {
             this.visibles.push(this.tempVisibles[i]);
           }
+          this.activeContents = this.contents.filter(item => {
+            return this.visibles.includes(parseInt(item.category_no));
+          });
           this.closeModal();
         }
       },

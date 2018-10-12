@@ -19,7 +19,7 @@
       <p class="lead">{{article.contents}}</p>
       <hr class="my-4">
       <p>{{article.email}} / {{article.updated_at}}</p>
-      <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+      <!--<a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>-->
     </div>
     <div class="list-group">
       <a href="#" v-for="(reple) in replies" class="list-group-item list-group-item-action flex-column align-items-start">

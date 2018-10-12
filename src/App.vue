@@ -1,5 +1,15 @@
 <template>
   <div id="app">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">
+          <a v-bind:href="'/'">
+            Home
+          </a>
+        </li>
+      </ol>
+    </nav>
+
     <router-view/>
   </div>
 </template>
@@ -11,7 +21,7 @@ export default {
 </script>
 
 <style>
-  #app {
+  div.main {
     margin: 15px;
   }
 
