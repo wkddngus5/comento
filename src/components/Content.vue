@@ -88,7 +88,13 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
+  @facebook-blue: #3b5998;
+  @google-red: #ea4335;
+  @naver-green: #00bd39;
+  @sign-up-green: #00c854;
+
+
   h1, h2 {
     font-weight: normal;
   }
@@ -121,12 +127,21 @@
     display: block;
   }
 
+  .notice {
+    font-weight: bold;
+
+    strong {
+      color: #f95045;
+    }
+  }
+
   .modal {
     top: 30px;
     display: none;
     opacity: 0;
     margin: 30px auto;
     width: auto;
+    height: 450px;
     max-width: 500px;
     position: fixed;
     z-index: 10;
@@ -138,6 +153,60 @@
     -o-transition: opacity 1s ease-in;
     transition: opacity 1s ease-in;
     text-align: center;
+
+    h3 {
+      margin: 20px auto;
+      display: inline-block;
+      width: 200px;
+    }
+
+    .notice {
+      border: solid 1px;
+      width: 90%;
+      margin: 10px auto;
+      padding: 10px;
+    }
+
+    li {
+      width: 90%;
+      margin: 10px auto;
+      display: block;
+      color: #FFFFFF;
+      padding: 10px 0;
+    }
+
+    li:hover {
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    li.facebook {
+      background-color: @facebook-blue;
+    }
+
+    li.google {
+      background-color: @google-red;
+    }
+
+    li.naver {
+      background-color: @naver-green;
+    }
+
+    .close-btn {
+      padding: 10px 0;
+      margin: 10px auto;
+      width: 90%;
+      background: none;
+      border: none;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .close-btn:hover {
+      opacity: 0.8;
+      background-color: #EFEFEF;
+      cursor: pointer;
+    }
   }
 
   .modal.is-visible {
@@ -145,67 +214,6 @@
     display: flex;
   }
 
-  .modal h3 {
-    margin: 20px auto;
-    display: inline-block;
-    width: 200px;
-  }
-
-  .modal .notice {
-    border: solid 1px;
-    width: 90%;
-    margin: 10px auto;
-    padding: 10px;
-  }
-
-  .notice {
-    font-weight: bold;
-  }
-
-  .notice strong {
-    color: #f95045;
-  }
-
-  .modal li {
-    width: 90%;
-    margin: 10px auto;
-    display: block;
-    color: #FFFFFF;
-    padding: 10px 0;
-  }
-
-  .modal li:hover {
-    opacity: 0.8;
-    cursor: pointer;
-  }
-
-  .modal li.facebook {
-    background-color: #4267b2;
-  }
-
-  .modal li.google {
-    background-color: #d93025;
-  }
-
-  .modal li.naver {
-    background-color: #42c729;
-  }
-
-  .modal .close-btn {
-    padding: 10px 0;
-    margin: 10px auto;
-    width: 90%;
-    background: none;
-    border: none;
-    font-size: 17px;
-    font-weight: bold;
-  }
-
-  .modal .close-btn:hover {
-    opacity: 0.8;
-    background-color: #EFEFEF;
-    cursor: pointer;
-  }
 
   .snackbar {
     position: fixed;
@@ -219,55 +227,56 @@
     transform: translateY(100%);
     trainsition: transform 1s;
     z-index: 10;
+
+    .close-btn {
+      position: absolute;
+      top: -15px;
+      right: 0;
+      padding: 5px;
+      background-color: #FFFFFF;
+      border: none;
+      color: #000000;
+      width: 30px;
+    }
+
+    .close-btn:hover {
+      opacity: 0.8;
+      background-color: #efefef;
+      cursor: pointer;
+    }
+
+    .notice {
+      margin: 0 60px;
+    }
+
+    button {
+      background-color: @sign-up-green;
+      border: solid 1px #000000;
+      color: #FFFFFF;
+      margin: 15px 5px;
+      width: 200px;
+      padding: 5px 0;
+    }
+
+    button:hover {
+      cursor: pointer;
+    }
+
+    .login {
+      background-color: #dddddd;
+      color: #000000;
+    }
+
+    .mobile .sign-up {
+      margin: 10px 0;
+      width: 100%;
+    }
   }
 
   .snackbar.is-visible {
     transform: translateY(0);
   }
 
-  .snackbar .close-btn {
-    position: absolute;
-    top: -15px;
-    right: 0;
-    padding: 5px;
-    background-color: #FFFFFF;
-    border: none;
-    color: #000000;
-    width: 30px;
-  }
-
-  .snackbar .close-btn:hover {
-    opacity: 0.8;
-    background-color: #efefef;
-    cursor: pointer;
-  }
-
-  .snackbar .notice {
-    margin: 0 60px;
-  }
-
-  .snackbar button {
-    background-color: #00c854;
-    border: solid 1px #000000;
-    color: #FFFFFF;
-    margin: 15px 5px;
-    width: 200px;
-    padding: 5px 0;
-  }
-
-  .snackbar button:hover {
-    cursor: click;
-  }
-
-  .snackbar .login {
-    background-color: #dddddd;
-    color: #000000;
-  }
-
-  .snackbar .mobile .sign-up {
-    margin: 10px 0;
-    width: 100%;
-  }
 
   @media (min-width: 480px) {
     .mobile {

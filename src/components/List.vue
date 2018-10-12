@@ -217,7 +217,7 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="less" scoped>
   h1, h2 {
     font-weight: normal;
   }
@@ -263,39 +263,39 @@
     background-color: #FFFFFF;
     flex-direction: column;
     text-align: center;
+
+    .close-btn {
+      background: none;
+      border: none;
+    }
+
+    .close-btn:hover {
+      cursor: pointer;
+      opacity: 0.8;
+      background-color: #efefef;
+    }
+
+    h3 {
+      display: inline-block;
+      width: 200px;
+      margin: 0 auto;
+    }
+
+    .save-btn {
+      background: none;
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    .save-btn:hover {
+      cursor: pointer;
+      opacity: 0.8;
+      background-color: #efefef;
+    }
   }
 
   .modal.is-visible {
     display: flex;
-  }
-
-  .modal .close-btn {
-    background: none;
-    border: none;
-  }
-
-  .modal .close-btn:hover {
-    cursor: pointer;
-    opacity: 0.8;
-    background-color: #efefef;
-  }
-
-  .modal h3 {
-    display: inline-block;
-    width: 200px;
-    margin: 0 auto;
-  }
-
-  .modal .save-btn {
-    background: none;
-    width: 300px;
-    margin: 0 auto;
-  }
-
-  .modal .save-btn:hover {
-    cursor: pointer;
-    opacity: 0.8;
-    background-color: #efefef;
   }
 
   .btn.filter {
